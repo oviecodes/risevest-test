@@ -1,10 +1,14 @@
 import express, { Express, Request, Response } from "express"
 import * as dotenv from "dotenv"
 import fileUpload from "express-fileupload"
+import indexRoutes from "./routes/index.js"
+import cors from "cors"
 
 dotenv.config()
 const app: Express = express()
 const port = process.env.PORT
+
+app.use(cors())
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -17,10 +21,7 @@ app.use(
   })
 )
 
-app.get("/", (req: Request, res: Response) => {
-  console.log("files", req.files)
-  res.send("Welcome to the challenge !!!!!!!!")
-})
+app.use("/", indexRoutes)
 
 app.listen(port, () => {
   console.log(`App is running on http://localhost:${port}`)
