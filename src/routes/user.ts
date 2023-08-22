@@ -1,5 +1,4 @@
 import express, { Router, Response, Request, NextFunction } from "express"
-import * as createError from "http-errors"
 import UserController from "../controllers/user.controller.js"
 
 const routes: Router = express.Router()

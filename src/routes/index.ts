@@ -1,5 +1,5 @@
 import express, { Router, Response, Request, NextFunction } from "express"
-import * as createError from "http-errors"
+import createError from "http-errors"
 import user from "./user.js"
 
 const routes = express.Router()
