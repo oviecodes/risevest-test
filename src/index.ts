@@ -1,7 +1,7 @@
-import express, { Express, Request, Response } from "express"
+import express, { Express } from "express"
 import * as dotenv from "dotenv"
 import fileUpload from "express-fileupload"
-import indexRoutes from "./routes/index.js"
+import routes from "./routes/index.js"
 import cors from "cors"
 
 dotenv.config()
@@ -21,7 +21,7 @@ app.use(
   })
 )
 
-app.use("/", indexRoutes)
+app.use("/", routes)
 
 app.listen(port, () => {
   console.log(`App is running on http://localhost:${port}`)
