@@ -29,7 +29,7 @@ export default {
       )
     })
   },
-  verifyAccessToken(token: string) {
+  verifyAccessToken(token: string): Promise<payload> {
     return new Promise((resolve, reject) => {
       jwt.verify(token, accessTokenSecret, async (err, payload) => {
         if (err) {

@@ -1,3 +1,4 @@
+import { Response, Request, NextFunction } from 'express'
 import jwt from '../utils/jwt.js'
 import createError from 'http-errors'
 
@@ -5,12 +6,14 @@ type user = {
   [key: string]: string
 }
 
-const auth = async (req, res, next) => {
-  if (!req.headers.authorization) {
+export default async (req: Request, res: Response, next: NextFunction) => {
+  const auth = req.headers.authorization
+
+  if (!auth) {
     return next(createError.Unauthorized('Access token is required'))
   }
 
-  const token = req.headers.authorization.split(' ')[1]
+  const token = auth.split(' ')[1]
 
   if (!token) {
     return next(createError.Unauthorized())
@@ -19,12 +22,10 @@ const auth = async (req, res, next) => {
   await jwt
     .verifyAccessToken(token)
     .then((user: user) => {
-      req.user = user.payload
+      req[String('user')] = user.payload
       next()
     })
     .catch((e) => {
-      next(createError.Unauthorized(e.message))
+      return next(createError.Unauthorized(e.message))
     })
 }
-
-export default auth

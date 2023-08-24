@@ -43,7 +43,10 @@ class UserService {
   }
 
   static async getUploads(user_id) {
-    return await db.table('uploads').where('user_id', user_id)
+    // return await db.table('uploads').where('user_id', user_id)
+    return {
+      uploads: true,
+    }
   }
 
   static async findBy(field: string, value: string) {
