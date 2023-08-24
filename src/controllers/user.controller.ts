@@ -1,15 +1,15 @@
-import { Request, Response } from "express"
-import UserService from "../services/user.service.js"
-import createError from "http-errors"
+import { Request, Response, NextFunction } from 'express'
+import UserService from '../services/user.service.js'
+import createError from 'http-errors'
 
 class UserController {
-  static async register(req: Request, res: Response, next) {
+  static async register(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await UserService.register(req.body)
 
       res.json({
         status: true,
-        message: "User registeration successful",
+        message: 'User registeration successful',
         data,
       })
     } catch (e) {
@@ -17,6 +17,34 @@ class UserController {
       return next(createError(e.statusCode, e.message))
     }
     // return res.send("user register")
+  }
+
+  static async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.login(req.body)
+
+      res.json({
+        status: true,
+        message: 'User login successful',
+        data,
+      })
+    } catch (e) {
+      return next(createError(e.statusCode, e.message))
+    }
+  }
+
+  static async getUploads(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.getUploads(req.params.user_id)
+
+      res.json({
+        status: true,
+        message: 'All user uploads',
+        data,
+      })
+    } catch (e) {
+      return next(createError(e.statusCode, e.message))
+    }
   }
 }
 
