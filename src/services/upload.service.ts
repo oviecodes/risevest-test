@@ -27,7 +27,7 @@ class UploadService {
     }
   }
 
-  static async upload(files, userId: Number) {
+  static async upload(files, userId: Number, folder = null) {
     const { name, size } = files.picture
     const Key = await this.slugifyName(name)
 
@@ -40,14 +40,25 @@ class UploadService {
 
     const { ETag, VersionId } = uploaded
 
-    await db.table('uploads').insert({
-      userId,
-      name,
-      slug: Key,
-      size,
-      ETag,
-      VersionId,
-    })
+    const data = await db.table('uploads').insert(
+      {
+        userId,
+        name,
+        slug: Key,
+        size,
+        ETag,
+        VersionId,
+      },
+      ['id']
+    )
+
+    // const data = await db.table("")
+
+    if (folder)
+      await db.table('folder_files').insert({
+        folderId: folder,
+        uploadId: data[0].id,
+      })
 
     return {
       uploads: true,
@@ -77,7 +88,7 @@ class UploadService {
     return db.table('folders').where('userId', userId)
   }
 
-  static async fetchFolderWithFiles(id) {
+  static async fetchFolderWithFiles(user_id, id) {
     const folder = await db.table('folders').where('id', id)
 
     const folder_data = await db

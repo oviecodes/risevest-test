@@ -28,7 +28,9 @@ class UploadController {
 
   static async upload(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await UploadService.upload(req.files, req['user'].id)
+      const { folder } = req.body
+
+      const data = await UploadService.upload(req.files, req['user'].id, folder)
 
       res.json({
         status: true,
@@ -102,7 +104,10 @@ class UploadController {
     const { id: userId } = req['user']
 
     try {
-      const data = await UploadService.fetchFolderWithFiles(userId)
+      const data = await UploadService.fetchFolderWithFiles(
+        userId,
+        req.params.id
+      )
 
       return res.json({
         status: true,
