@@ -23,6 +23,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     .verifyAccessToken(token)
     .then((user: user) => {
       req[String('user')] = user.payload
+      console.log('here')
       next()
     })
     .catch((e) => {

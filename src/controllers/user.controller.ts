@@ -34,12 +34,14 @@ class UserController {
   }
 
   static async getUploads(req: Request, res: Response, next: NextFunction) {
-    const { id: user_id } = req['user']
+    const { id: userId } = req['user']
+
+    console.log(req.body)
 
     // console.log(req['user'])
 
     try {
-      const data = await UserService.getUploads(user_id)
+      const data = await UserService.getUploads(userId)
 
       res.json({
         status: true,
@@ -47,6 +49,7 @@ class UserController {
         data,
       })
     } catch (e) {
+      console.log(e)
       return next(createError(e.statusCode, e.message))
     }
   }

@@ -2,6 +2,9 @@ import bcrypt from 'bcryptjs'
 import db from '../connectors/knex.connector.js'
 import createError from 'http-errors'
 import jwt from '../utils/jwt.js'
+import { upload } from '../connectors/s3.js'
+import path from 'path'
+import fs from 'fs'
 
 class UserService {
   static async register(data) {
@@ -42,11 +45,8 @@ class UserService {
     return { ...user, accessToken }
   }
 
-  static async getUploads(user_id) {
-    // return await db.table('uploads').where('user_id', user_id)
-    return {
-      uploads: true,
-    }
+  static async getUploads(userId) {
+    return await db.table('uploads').where('userId', userId)
   }
 
   static async findBy(field: string, value: string) {
