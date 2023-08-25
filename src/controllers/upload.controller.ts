@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import UserService from '../services/user.service.js'
 import UploadService from '../services/upload.service.js'
 import createError from 'http-errors'
+import fs from 'fs'
 
 class UploadController {
   static async getUploads(req: Request, res: Response, next: NextFunction) {
@@ -38,6 +39,31 @@ class UploadController {
       console.log(e)
       return next(createError(e.statusCode, e.message))
     }
+  }
+
+  static async getFile(req: Request, res: Response, next: NextFunction) {
+    const { slug } = req.params
+
+    const downloadPath = 'tempDownloads'
+
+    try {
+      await UploadService.getFile(slug, downloadPath)
+
+      return res.download(`${downloadPath}/${slug}`, (err) => {
+        if (err) {
+          console.log(err)
+          return
+        }
+        fs.unlinkSync(`${downloadPath}/${slug}`)
+      })
+    } catch (e) {
+      console.log(e)
+      return next(createError(e.statusCode, e.message))
+    }
+  }
+
+  static async downLoadFile(res, downloadPath, slug) {
+    return res.download(`${downloadPath}/${slug}`)
   }
 }
 

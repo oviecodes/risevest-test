@@ -6,8 +6,8 @@ import auth from '../middleware/auth.js'
 
 const routes: Router = express.Router()
 
-routes.get('/', [auth], UserController.getUploads)
+routes.get('/', [auth])
 routes.post('/', [auth], UploadController.upload)
-routes.get('/:name', [auth], UserController.getUploads)
+routes.get('/:slug', [auth], UploadController.getFile)
 
 export default routes

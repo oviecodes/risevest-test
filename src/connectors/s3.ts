@@ -2,6 +2,8 @@ import {
   S3Client,
   CreateBucketCommand,
   PutObjectCommand,
+  GetObjectCommand,
+  ListObjectsCommand,
 } from '@aws-sdk/client-s3'
 // Set the AWS Region.
 const REGION = process.env.REGION //e.g. "us-east-1"
@@ -29,6 +31,23 @@ export const upload = async (data) => {
   } catch (e) {
     console.log(e)
   }
+}
+
+export const downloadFilesFromBucket = async (Key) => {
+  // const { Contents } = await s3Client.send(
+  //   new ListObjectsCommand({ Bucket: })
+  // );
+  // const path = await promptForText("Enter destination path for files:");
+
+  // for (let content of Contents) {
+  const obj = await s3Client.send(new GetObjectCommand({ Bucket, Key }))
+  //   writeFileSync(
+  //     `${path}/${content.Key}`,
+  //     await obj.Body.transformToByteArray()
+  //   );
+  // }
+  // console.log("Files downloaded successfully.\n");
+  return obj
 }
 
 const remove = async (name) => {}

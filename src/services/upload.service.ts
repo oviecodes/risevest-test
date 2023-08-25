@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import db from '../connectors/knex.connector.js'
 import createError from 'http-errors'
 import jwt from '../utils/jwt.js'
-import { upload } from '../connectors/s3.js'
+import { upload, downloadFilesFromBucket } from '../connectors/s3.js'
 import path from 'path'
 import fs from 'fs'
 import slugify from 'slugify'
@@ -58,6 +58,17 @@ class UploadService {
     return {
       uploads: true,
     }
+  }
+
+  static async getFile(key, downloadPath) {
+    const file = await downloadFilesFromBucket(key)
+
+    const tempPath = path.resolve(`${downloadPath}/${key}`)
+
+    fs.writeFileSync(tempPath, await file.Body.transformToByteArray())
+
+    console.log('dowloading file')
+    return file
   }
 
   static async slugifyName(name) {
