@@ -48,12 +48,6 @@ class UploadService {
       ETag,
       VersionId,
     })
-    //slug
-    //userId
-    //safe
-    //ETag
-    //VersionId
-    //size
 
     return {
       uploads: true,
@@ -69,6 +63,32 @@ class UploadService {
 
     console.log('dowloading file')
     return file
+  }
+
+  static async createFolder(name: string, userId) {
+    return db.table('folders').insert({
+      name,
+      size: 0,
+      userId,
+    })
+  }
+
+  static async fetchFolders(userId) {
+    return db.table('folders').where('userId', userId)
+  }
+
+  static async fetchFolderWithFiles(id) {
+    const folder = await db.table('folders').where('id', id)
+
+    const folder_data = await db
+      .table('folder_files')
+      .where('folderId', id)
+      .join('uploads', 'uploadId', '=', 'uploads.id')
+      .select('name', 'slug', 'size', 'uploads.id')
+
+    folder[0].folder_data = folder_data
+
+    return folder
   }
 
   static async slugifyName(name) {

@@ -62,8 +62,57 @@ class UploadController {
     }
   }
 
-  static async downLoadFile(res, downloadPath, slug) {
-    return res.download(`${downloadPath}/${slug}`)
+  static async creatFolder(req: Request, res: Response, next: NextFunction) {
+    const { folder } = req.body
+
+    const { id: userId } = req['user']
+
+    try {
+      await UploadService.createFolder(folder, userId)
+
+      return res.json({
+        status: true,
+        message: 'Folder created successfully',
+        data: folder,
+      })
+    } catch (e) {
+      console.log(e)
+      return next(createError(e.statusCode, e.message))
+    }
+  }
+
+  static async allUserFolders(req: Request, res: Response, next: NextFunction) {
+    const { id: userId } = req['user']
+
+    try {
+      const data = await UploadService.fetchFolders(userId)
+
+      return res.json({
+        status: true,
+        message: 'All your folders',
+        data,
+      })
+    } catch (e) {
+      console.log(e)
+      return next(createError(e.statusCode, e.message))
+    }
+  }
+
+  static async fetchFolder(req: Request, res: Response, next: NextFunction) {
+    const { id: userId } = req['user']
+
+    try {
+      const data = await UploadService.fetchFolderWithFiles(userId)
+
+      return res.json({
+        status: true,
+        message: 'Folder files',
+        data,
+      })
+    } catch (e) {
+      console.log(e)
+      return next(createError(e.statusCode, e.message))
+    }
   }
 }
 
