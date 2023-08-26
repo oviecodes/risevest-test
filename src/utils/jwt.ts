@@ -1,4 +1,5 @@
 import UserService from '../services/user.service.js'
+import AdminService from '../services/admin.service.js'
 import jwt from 'jsonwebtoken'
 import createError from 'http-errors'
 
@@ -29,7 +30,7 @@ export default {
       )
     })
   },
-  verifyAccessToken(token: string): Promise<payload> {
+  verifyAccessToken(token: string, type = 'user'): Promise<payload> {
     return new Promise((resolve, reject) => {
       jwt.verify(token, accessTokenSecret, async (err, payload) => {
         if (err) {
@@ -41,7 +42,12 @@ export default {
         const audience = payload.aud
         if (issuer !== tokenIssuer)
           return reject(createError.Unauthorized('Unauthorized'))
-        let user = await UserService.findBy('email', audience)
+
+        let user =
+          type == 'user'
+            ? await UserService.findBy('email', audience)
+            : await AdminService.findBy('email', audience)
+
         if (!user.length)
           return reject(createError.Unauthorized('Unauthorized'))
         resolve(payload)

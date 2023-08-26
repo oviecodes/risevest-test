@@ -9,23 +9,17 @@ import slugify from 'slugify'
 import randomstring from 'randomstring'
 
 class UploadService {
-  static async getUploads(files) {
-    // return await db.table('uploads').where('user_id', user_id)
-    console.log('files', files)
-    // console.log('path ext', path.extname(files.picture.name))
-
-    const uploadData = {
-      Body: fs.readFileSync(files.picture.tempFilePath),
-      Key: files.picture.name,
-    }
-
-    // console.log(uploadData)
-
-    await upload(uploadData)
-    return {
-      uploads: true,
-    }
-  }
+  //   static async getUploads(files) {
+  // console.log('files', files)
+  // const uploadData = {
+  //   Body: fs.readFileSync(files.picture.tempFilePath),
+  //   Key: files.picture.name,
+  // }
+  // await upload(uploadData)
+  // return {
+  //   uploads: true,
+  // }
+  //   }
 
   static async upload(files, userId: Number, folder = null) {
     const { name, size } = files.picture
@@ -66,6 +60,10 @@ class UploadService {
   }
 
   static async getFile(key, downloadPath) {
+    const check = await db.table('uploads').where('slug', key)
+
+    if (!check.length) throw createError.NotFound('Resource Not Found')
+
     const file = await downloadFilesFromBucket(key)
 
     const tempPath = path.resolve(`${downloadPath}/${key}`)
@@ -110,14 +108,23 @@ class UploadService {
         lower: true,
       })
 
-    name = `${name}${randomstring.generate({
+    const extension = path.extname(name)
+
+    if (!extension)
+      throw createError.UnprocessableEntity('Unsupported file type')
+
+    const index = name.lastIndexOf(extension)
+
+    name = `${name.slice(0, index)}-${randomstring.generate({
       length: 12,
       charset: 'alphanumeric',
     })}`
 
-    return slugify.default(name, {
+    const slug = slugify.default(name, {
       lower: true,
     })
+
+    return `${slug}${extension}`
   }
 }
 

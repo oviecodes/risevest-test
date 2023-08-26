@@ -2,11 +2,11 @@ import bcrypt from 'bcryptjs'
 import db from '../connectors/knex.connector.js'
 import createError from 'http-errors'
 import jwt from '../utils/jwt.js'
-import { upload } from '../connectors/s3.js'
+import { upload, deleteFileFromBucket } from '../connectors/s3.js'
 import path from 'path'
 import fs from 'fs'
 
-class UserService {
+class AdminService {
   static async register(data) {
     let { name, password } = data
 
@@ -15,6 +15,8 @@ class UserService {
     const passwordUnencrypted = password
 
     data.password = bcrypt.hashSync(password, SALT)
+
+    data.isAdmin = true
 
     await db.table('users').insert(data)
 
@@ -28,7 +30,7 @@ class UserService {
     const [user] = await db
       .table('users')
       .where('email', email)
-      .whereNot('isAdmin', true)
+      .where('isAdmin', true)
 
     const valid = bcrypt.compareSync(password, user.password)
 
@@ -44,13 +46,29 @@ class UserService {
     return { ...user, accessToken }
   }
 
-  static async getUploads(userId) {
-    return await db.table('uploads').where('userId', userId)
+  static async flagFile(name) {
+    const file = await db.table('uploads').where('slug', name)
+
+    if (!file.length) throw createError.NotFound('resource not found')
+
+    const id = file[0].id
+
+    await db.table('uploads').where('id', id).update('safe', false)
+
+    await db.table('folder_files').where('uploadId', id).del()
+
+    await db.table('uploads').where('id', id).del()
+
+    await deleteFileFromBucket(name)
+
+    return {
+      deleted: true,
+    }
   }
 
   static async findBy(field: string, value: string) {
-    return db.table('users').where(field, value).whereNot('isAdmin', true)
+    return db.table('users').where(field, value).where('isAdmin', true)
   }
 }
 
-export default UserService
+export default AdminService

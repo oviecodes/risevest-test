@@ -6,6 +6,11 @@ type user = {
   [key: string]: string
 }
 
+// const auths = {
+//   user: jwt.verifyAccessToken,
+//   admin: jwt.adminVerifyAccessToken,
+// }
+
 export default async (req: Request, res: Response, next: NextFunction) => {
   const auth = req.headers.authorization
 
@@ -19,11 +24,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     return next(createError.Unauthorized())
   }
 
+  const authType = req.url.indexOf('admin') > 0 ? 'admin' : 'user'
+
+  console.log(authType)
+
   await jwt
-    .verifyAccessToken(token)
+    .verifyAccessToken(token, authType)
     .then((user: user) => {
       req[String('user')] = user.payload
-      console.log('here')
       next()
     })
     .catch((e) => {

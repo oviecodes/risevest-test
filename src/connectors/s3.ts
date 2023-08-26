@@ -4,6 +4,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   ListObjectsCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3'
 // Set the AWS Region.
 const REGION = process.env.REGION //e.g. "us-east-1"
@@ -48,6 +49,12 @@ export const downloadFilesFromBucket = async (Key) => {
   // }
   // console.log("Files downloaded successfully.\n");
   return obj
+}
+
+export const deleteFileFromBucket = async (Key) => {
+  await s3Client.send(new DeleteObjectCommand({ Bucket, Key }))
+
+  return
 }
 
 const remove = async (name) => {}

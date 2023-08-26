@@ -2,11 +2,13 @@ import express, { Router, Response, Request, NextFunction } from 'express'
 import createError from 'http-errors'
 import user from './user.js'
 import upload from './uploads.js'
+import admin from './admin.js'
 
 const routes = express.Router()
 
 routes.use('/user', user)
 routes.use('/upload', upload)
+routes.use('/admin', admin)
 
 routes.all('/', (req, res) => {
   res.status(200).json({
