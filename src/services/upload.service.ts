@@ -9,18 +9,6 @@ import slugify from 'slugify'
 import randomstring from 'randomstring'
 
 class UploadService {
-  //   static async getUploads(files) {
-  // console.log('files', files)
-  // const uploadData = {
-  //   Body: fs.readFileSync(files.picture.tempFilePath),
-  //   Key: files.picture.name,
-  // }
-  // await upload(uploadData)
-  // return {
-  //   uploads: true,
-  // }
-  //   }
-
   static async upload(files, userId: Number, folder = null) {
     const { name, size } = files.picture
     const Key = await this.slugifyName(name)
