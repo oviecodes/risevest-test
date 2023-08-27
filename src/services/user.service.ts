@@ -25,23 +25,26 @@ class UserService {
 
   static async login(data) {
     const { email, password } = data
-    const [user] = await db
+    const user = await db
       .table('users')
       .where('email', email)
       .whereNot('isAdmin', true)
 
-    const valid = bcrypt.compareSync(password, user.password)
+    if (!user.length)
+      throw createError.NotFound('Resource not found, please check credentials')
+
+    const valid = bcrypt.compareSync(password, user[0].password)
 
     if (!valid)
       throw createError.UnprocessableEntity(
         'Cannot Login, please check credentials'
       )
     //assign jwt...
-    const accessToken = await jwt.signAccessToken(user)
+    const accessToken = await jwt.signAccessToken(user[0])
 
-    delete user.password
+    delete user[0].password
 
-    return { ...user, accessToken }
+    return { ...user[0], accessToken }
   }
 
   static async getUploads(userId) {

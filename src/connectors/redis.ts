@@ -1,6 +1,8 @@
 import redis from 'redis'
 
-const client = redis.createClient()
+const client = redis.createClient({
+  url: process.env.NODE_ENV == 'production' ? process.env.REDIS_URL : '',
+})
 
 client.on('connect', () => {
   console.log('Client connected to redis')

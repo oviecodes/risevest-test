@@ -57,49 +57,33 @@ class UploadService {
 
     let file: any = await redis.get('uploads', key)
 
-    // let file
-
-    console.log('file', file)
-
-    // return
-
     if (!file) {
       file = await downloadFilesFromBucket(key)
       file = await file['Body'].transformToByteArray()
-      console.log('from aws', file)
-      //   console.log(JSON.stringify(file))
 
       await redis.add('uploads', key, JSON.stringify(Buffer.from(file)))
+    } else {
+      file = Buffer.from(file['data'])
     }
 
     const tempPath = path.resolve(`${downloadPath}/${key}`)
 
-    fs.writeFileSync(tempPath, Buffer.from(file['data']) ?? file)
+    fs.writeFileSync(tempPath, file)
 
     console.log('dowloading file')
     return file
   }
 
   static async createFolder(name: string, userId) {
-    const data = db.table('folders').insert({
+    return db.table('folders').insert({
       name,
       size: 0,
       userId,
     })
-
-    return data
   }
 
   static async fetchFolders(userId) {
-    let data = await redis.get('folder', String(userId))
-
-    console.log('here', data)
-
-    if (data == null) {
-      data = await db.table('folders').where('userId', userId)
-      await redis.add('folder', String(userId), JSON.stringify(data))
-    }
-    return data
+    return db.table('folders').where('userId', userId)
   }
 
   static async fetchFolderWithFiles(user_id, id) {
