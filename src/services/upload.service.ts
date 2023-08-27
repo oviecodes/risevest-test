@@ -7,6 +7,9 @@ import path from 'path'
 import fs from 'fs'
 import slugify from 'slugify'
 import randomstring from 'randomstring'
+import redis from '../utils/redis.js'
+import { arrayBuffer } from 'stream/consumers'
+import { isTypedArray } from 'util/types'
 
 class UploadService {
   static async upload(files, userId: Number, folder = null) {
@@ -52,26 +55,51 @@ class UploadService {
 
     if (!check.length) throw createError.NotFound('Resource Not Found')
 
-    const file = await downloadFilesFromBucket(key)
+    let file: any = await redis.get('uploads', key)
+
+    // let file
+
+    console.log('file', file)
+
+    // return
+
+    if (!file) {
+      file = await downloadFilesFromBucket(key)
+      file = await file['Body'].transformToByteArray()
+      console.log('from aws', file)
+      //   console.log(JSON.stringify(file))
+
+      await redis.add('uploads', key, JSON.stringify(Buffer.from(file)))
+    }
 
     const tempPath = path.resolve(`${downloadPath}/${key}`)
 
-    fs.writeFileSync(tempPath, await file.Body.transformToByteArray())
+    fs.writeFileSync(tempPath, Buffer.from(file['data']) ?? file)
 
     console.log('dowloading file')
     return file
   }
 
   static async createFolder(name: string, userId) {
-    return db.table('folders').insert({
+    const data = db.table('folders').insert({
       name,
       size: 0,
       userId,
     })
+
+    return data
   }
 
   static async fetchFolders(userId) {
-    return db.table('folders').where('userId', userId)
+    let data = await redis.get('folder', String(userId))
+
+    console.log('here', data)
+
+    if (data == null) {
+      data = await db.table('folders').where('userId', userId)
+      await redis.add('folder', String(userId), JSON.stringify(data))
+    }
+    return data
   }
 
   static async fetchFolderWithFiles(user_id, id) {
