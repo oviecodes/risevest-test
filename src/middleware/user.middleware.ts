@@ -8,12 +8,6 @@ export default {
   checkEmail: async (req: Request, res: Response, next: NextFunction) => {
     const { email } = req.body
 
-    // if() ""
-
-    console.log(req.originalUrl.indexOf('admin'))
-
-    // console.log(req.baseUrl, req.originalUrl)
-
     const user =
       req.originalUrl.indexOf('admin') > 0
         ? await AdminService.findBy('email', email)

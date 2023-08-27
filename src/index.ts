@@ -29,3 +29,5 @@ app.use('/', routes)
 app.listen(port, () => {
   console.log(`App is running on http://localhost:${port}`)
 })
+
+export default app

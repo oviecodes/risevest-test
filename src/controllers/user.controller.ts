@@ -13,7 +13,7 @@ class UserController {
         data,
       })
     } catch (e) {
-      //   console.log("statusCode ", e)
+      console.log('statusCode ', e)
       return next(createError(e.statusCode, e.message))
     }
     // return res.send("user register")
@@ -35,9 +35,6 @@ class UserController {
 
   static async getUploads(req: Request, res: Response, next: NextFunction) {
     const { id: userId } = req['user']
-
-    console.log(req.body)
-
     // console.log(req['user'])
 
     try {

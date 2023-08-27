@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs'
 import db from '../connectors/knex.connector.js'
 import createError from 'http-errors'
 import jwt from '../utils/jwt.js'
-import { upload, downloadFilesFromBucket } from '../connectors/s3.js'
+import s3 from '../connectors/s3.js'
 import path from 'path'
 import fs from 'fs'
 import slugify from 'slugify'
@@ -21,7 +21,7 @@ class UploadService {
       Key,
     }
 
-    const uploaded = await upload(uploadData)
+    const uploaded = await s3.upload(uploadData)
 
     const { ETag, VersionId } = uploaded
 
@@ -58,7 +58,7 @@ class UploadService {
     let file: any = await redis.get('uploads', key)
 
     if (!file) {
-      file = await downloadFilesFromBucket(key)
+      file = await s3.downloadFilesFromBucket(key)
       file = await file['Body'].transformToByteArray()
 
       await redis.add('uploads', key, JSON.stringify(Buffer.from(file)))

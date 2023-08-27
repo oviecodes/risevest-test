@@ -5,6 +5,7 @@
     "target": "ES2016",
     "outDir": "./dist",
     "sourceMap": false,
+    "esModuleInterop": true
   },
   "include": ["./src/**/*", "index.js"]
 }

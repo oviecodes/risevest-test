@@ -26,8 +26,6 @@ export const upload = async (data) => {
     const command = new PutObjectCommand({ ...data, Bucket })
     const results = await s3Client.send(command)
 
-    console.log(results)
-
     return results
   } catch (e) {
     console.log(e)
@@ -58,3 +56,10 @@ export const deleteFileFromBucket = async (Key) => {
 }
 
 const remove = async (name) => {}
+
+export default {
+  upload,
+  downloadFilesFromBucket,
+  deleteFileFromBucket,
+  remove,
+}

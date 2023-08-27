@@ -11,7 +11,6 @@ export default {
 
         const ret = await redis.hSet(key, field, values)
 
-        // resolve(JSON.parse(ret))
         console.log(ret)
         resolve(ret)
       } catch (e) {
@@ -33,23 +32,6 @@ export default {
     })
   },
   remove(key, field) {
-    return new Promise(async (resolve, reject) => {
-      //   redis.get('refresh_tokens', (err, reply) => {
-      //     if (err) {
-      //       console.log('error', err.message)
-      //       return reject(createError.InternalServerError())
-      //     }
-      //     const data = JSON.parse(reply)
-      //     const index = data.indexOf(key)
-      //     data.splice(index, 1)
-      //     const refresh_tokens = JSON.stringify(data)
-      //     redis.set('refresh_tokens', refresh_tokens, (err, reply) => {
-      //       if (err) {
-      //         return reject(createError.InternalServerError())
-      //       }
-      //       resolve(reply)
-      //     })
-      //   })
-    })
+    return new Promise(async (resolve, reject) => {})
   },
 }
