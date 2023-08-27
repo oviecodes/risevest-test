@@ -10,10 +10,12 @@ export default {
 
     // if() ""
 
-    console.log(req.url.indexOf('admin'))
+    console.log(req.originalUrl.indexOf('admin'))
+
+    // console.log(req.baseUrl, req.originalUrl)
 
     const user =
-      req.url.indexOf('admin') > 0
+      req.originalUrl.indexOf('admin') > 0
         ? await AdminService.findBy('email', email)
         : await UserService.findBy('email', email)
 

@@ -24,9 +24,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     return next(createError.Unauthorized())
   }
 
-  const authType = req.url.indexOf('admin') > 0 ? 'admin' : 'user'
-
-  console.log(authType)
+  const authType = req.originalUrl.indexOf('admin') > 0 ? 'admin' : 'user'
 
   await jwt
     .verifyAccessToken(token, authType)
