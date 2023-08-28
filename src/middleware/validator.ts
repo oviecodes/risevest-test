@@ -15,8 +15,6 @@ export default (schema, property?) => {
     const { error } = schema.validate(data, options)
     const valid = error == null
 
-    console.log('', schema, valid)
-
     if (valid) {
       next()
     } else {
