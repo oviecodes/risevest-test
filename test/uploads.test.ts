@@ -1,7 +1,5 @@
 //@ts-nocheck
-import { test, beforeEach, describe, afterAll, jest } from '@jest/globals'
-// const mongoose = require('mongoose')
-// import db from '../src/connectors/knex.connector'
+import { test, beforeEach, describe, jest, afterAll } from '@jest/globals'
 import knexfile from '../knexfile.mjs'
 import { knex } from '../src/connectors/knex.connector.js'
 import s3 from '../src/connectors/s3.js'
@@ -9,7 +7,7 @@ import s3 from '../src/connectors/s3.js'
 const db = knex(knexfile['test'])
 
 import supertest from 'supertest'
-import app from '../src/index.js'
+import app, { server } from '../src/index.js'
 
 import {
   initialUploads,
@@ -30,21 +28,14 @@ beforeAll(async () => {
   //   console.log('test user', user.body)
   jwt = user.body.data.accessToken
   //   console.log(jwt)
+  return
 })
 
 beforeEach(async () => {
-  //   await Image.deleteMany({})
-  //   await Promise.all([
-  //     db.raw('truncate table uploads'),
-  //     db.raw('truncate table users'),
-  //   ])
-  //   await db.table('users').where({}).del()
+  jest.restoreAllMocks()
   await db.table('uploads').where({}).del()
 
-  await Promise.all([
-    db.table('uploads').insert(initialUploads),
-    //   db.table('users').insert(users),
-  ])
+  await Promise.all([db.table('uploads').insert(initialUploads)])
 })
 
 describe('when there is initially some uploads saved', () => {
@@ -55,7 +46,7 @@ describe('when there is initially some uploads saved', () => {
       .auth(jwt, { type: 'bearer' })
       .expect(200)
       .expect('Content-Type', /application\/json/)
-  }, 100000)
+  })
 
   test('there are 2 uploads', async () => {
     const response = await api
@@ -63,7 +54,7 @@ describe('when there is initially some uploads saved', () => {
       .auth(jwt, { type: 'bearer' })
 
     expect(response.body.data).toHaveLength(initialUploads.length)
-  }, 100000)
+  })
 
   test('Image title array should have the title of the second image', async () => {
     const response = await api
@@ -74,7 +65,7 @@ describe('when there is initially some uploads saved', () => {
     )
     expect(titles).toContain(initialUploads[0].slug)
     expect(titles).toContain(initialUploads[1].slug)
-  }, 100000)
+  })
 })
 
 describe('where there is authentication error', () => {
@@ -115,6 +106,12 @@ describe('mocking Uploads', () => {
   })
 })
 
+afterEach(() => {
+  //   server.closeAllConnections()
+  //   return db.destroy()
+})
+
 afterAll(async () => {
-  //   return mongoose.connection.close()
+  //   server.closeAllConnections()
+  return db.destroy()
 })

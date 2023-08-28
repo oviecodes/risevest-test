@@ -26,7 +26,7 @@ app.use(
 
 app.use('/', routes)
 
-app.listen(port, () => {
+export const server = app.listen(port, () => {
   console.log(`App is running on http://localhost:${port}`)
 })
 
