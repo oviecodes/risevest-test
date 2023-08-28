@@ -17,4 +17,12 @@ export default {
 
     return next()
   },
+
+  isAdmin: async (req: Request, res: Response, next: NextFunction) => {
+    const admin = req['user'].isAdmin
+
+    if (!admin) return next(createError.Unauthorized('Action Forbidden'))
+
+    return next()
+  },
 }
