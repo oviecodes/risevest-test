@@ -33,3 +33,8 @@ Implemented routes include
 
 Revokable session management is implement through the use of JWT
 Redis is used for caching files, to prevent making a request to aws at all times. Files are fetched on first request and stored in the redis cache for quick retrieval on subsequent requests.
+
+#### Tests
+
+- `npm run test` - for unit tests
+- `npm run test:api` - for integration test
