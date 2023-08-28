@@ -18,8 +18,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     return next(createError.Unauthorized('Access token is required'))
   }
 
-  console.log('auth')
-
   const token = auth.split(' ')[1]
 
   if (!token) {
