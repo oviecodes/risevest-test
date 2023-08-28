@@ -2,9 +2,6 @@ import bcrypt from 'bcryptjs'
 import db from '../connectors/knex.connector.js'
 import createError from 'http-errors'
 import jwt from '../utils/jwt.js'
-import { upload } from '../connectors/s3.js'
-import path from 'path'
-import fs from 'fs'
 
 class UserService {
   static async register(data) {

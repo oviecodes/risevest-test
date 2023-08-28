@@ -1,13 +1,13 @@
 //@ts-nocheck
 import { test, beforeEach, describe, jest, afterAll } from '@jest/globals'
-import knexfile from '../knexfile.mjs'
-import { knex } from '../src/connectors/knex.connector.js'
-import s3 from '../src/connectors/s3.js'
+import knexfile from '../../knexfile.mjs'
+import { knex } from '../../src/connectors/knex.connector.js'
+import s3 from '../../src/connectors/s3.js'
 
 const db = knex(knexfile['test'])
 
 import supertest from 'supertest'
-import app, { server } from '../src/index.js'
+import app, { server } from '../../src/index.js'
 
 import {
   initialUploads,
@@ -16,18 +16,22 @@ import {
   users,
   nonExist,
   folder,
-} from './test_helper'
+} from '../test_helper.js'
 
 let jwt
+let id
 
 const api = supertest(app)
 
 beforeAll(async () => {
   await db.table('users').where({}).del()
   const user = await api.post('/user/register').send(users[0])
-  //   console.log('test user', user.body)
   jwt = user.body.data.accessToken
-  //   console.log(jwt)
+  id = user.body.data.id
+  initialUploads.forEach((el, i) => {
+    console.log('id', id)
+    initialUploads[i].userId = id
+  })
   return
 })
 
@@ -77,7 +81,7 @@ describe('where there is authentication error', () => {
       .send(newUpload)
       .expect(401, { status: false, message: 'Access token is required' })
 
-    const uploadsAtEnd = await db.table('uploads').where('userId', users[0].id)
+    const uploadsAtEnd = await db.table('uploads').where('userId', id)
     expect(uploadsAtEnd).toHaveLength(initialUploads.length)
   })
 
@@ -106,12 +110,6 @@ describe('mocking Uploads', () => {
   })
 })
 
-afterEach(() => {
-  //   server.closeAllConnections()
-  //   return db.destroy()
-})
-
 afterAll(async () => {
-  //   server.closeAllConnections()
   return db.destroy()
 })

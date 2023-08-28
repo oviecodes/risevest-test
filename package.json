@@ -10,7 +10,8 @@
     "start": "node ./dist/index.js",
     "predev": "npm run build",
     "dev": "tsc --watch & NODE_ENV=development nodemon ./dist/index.js",
-    "test": "NODE_ENV=test npm run migrate && node  --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --forceExit --detectOpenHandles",
+    "test:api": "NODE_ENV=test npm run migrate && node  --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --forceExit --detectOpenHandles test/api",
+    "test": "NODE_ENV=test node  --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --forceExit --detectOpenHandles test/unit/",
     "migrate": "knex migrate:latest"
   },
   "author": "Alexander Godwin",

@@ -8,7 +8,6 @@ export const users = [
     name: 'Oby Dan',
     email: 'oby@gmail.com',
     password: 'hybridtech',
-    id: 1,
   },
 ]
 
@@ -57,5 +56,4 @@ export const imagesInDb = async () => {
 
 export const folder = {
   folder: 'happy days',
-  id: 1,
 }
